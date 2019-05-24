@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Image downloading</string>
+    <string-array name="links">
+        <item>https://images.pexels.com/photos/257360/pexels-photo-257360.jpeg</item>
+
+        <item>https://images.pexels.com/photos/257360/pexels-photo-257360.jpeg</item>
+        <item>https://image.shutterstock.com/image-photo/beautiful-pink-flowers-anemones-ladybug-260nw-1020162208.jpg</item>
+
+    </string-array>
 </resources>

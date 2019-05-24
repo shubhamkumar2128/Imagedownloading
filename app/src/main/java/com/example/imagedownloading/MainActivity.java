@@ -2,6 +2,7 @@ package com.example.imagedownloading;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
@@ -11,8 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -27,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     Button dwnld;
     EditText editText;
-
+    LinearLayout linearLayout;
+    ListView listView;
+    String links[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +45,18 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET}, 121);
 
         }
+        links = getResources().getStringArray(R.array.links);
+        linearLayout = findViewById(R.id.linearlay);
         dwnld = findViewById(R.id.downloadbtn);
+        listView = findViewById(R.id.list);
         editText = findViewById(R.id.eturl);
-        editText.setText("https://images.pexels.com/photos/257360/pexels-photo-257360.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500");
+        listView.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, links));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                editText.setText(links[position]);
+            }
+        });
         dwnld.setOnClickListener(new View.OnClickListener() {
             @Override
 
@@ -77,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.d("msg", e.getMessage());
         } finally {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    linearLayout.setVisibility(View.INVISIBLE);
+                }
+            });
             if (connection != null)
                 connection.disconnect();
             if (inputStream != null) {
@@ -102,9 +125,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            Log.d("msg", "run()");
-            if(downloadImageThroughThread(editText.getText().toString())==true)
-            {
+
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    linearLayout.setVisibility(View.VISIBLE);
+                }
+            });
+            if (downloadImageThroughThread(editText.getText().toString().trim()) == true) {
                 Log.d("msg", "Downloaded successful");
             }
 
